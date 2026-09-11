@@ -1,0 +1,10 @@
+.agents/
+skills-lock.json
+node_modules/
+
+# Imagens originais soltas na raiz: fonte enviada pelo cliente, renomeada e
+# otimizada para images/ antes de entrar no catalogo. Nao vai para o deploy.
+/*.jpeg
+/*.jpg
+/*.png
+/*.webp
