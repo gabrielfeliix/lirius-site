@@ -1949,10 +1949,6 @@ img {
         gap: var(--space-md);
     }
 
-    .product-detail-img {
-        height: 280px;
-    }
-
     .product-detail-title {
         font-size: 1.8rem;
     }
@@ -2113,7 +2109,9 @@ img {
 
 .product-detail-img {
     width: 100%;
-    height: 500px;
+    /* Mesma proporção dos arquivos (600x800): a foto aparece inteira, sem corte */
+    height: auto;
+    aspect-ratio: 3 / 4;
     object-fit: cover;
     /* Removed heavy transform scale - causes jank. Subtle filter only. */
     transition: filter 0.35s ease;
@@ -2186,20 +2184,12 @@ img {
     .product-detail-grid {
         gap: var(--space-md);
     }
-
-    .product-detail-img {
-        height: 400px;
-    }
 }
 
 @media (max-width: 768px) {
     .product-detail-grid {
         grid-template-columns: 1fr;
         gap: var(--space-md);
-    }
-
-    .product-detail-img {
-        height: 350px;
     }
 
     .product-detail-title {

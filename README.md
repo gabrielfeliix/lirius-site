@@ -45,10 +45,10 @@ invisível.
    São 6 cards por `.slider-page`; os pontos e as setas do carrossel são
    gerados pela quantidade de páginas, então não há nada a configurar.
 
-## Ao mexer no CSS
+## Ao mexer no CSS ou no JS
 
-Subir a query de versão (`styles.css?v=…`) em todos os HTML, senão o
-navegador continua servindo a folha antiga do cache.
+Subir a query de versão (`styles.css?v=…` ou `script.js?v=…`) em todos os
+HTML, senão o navegador continua servindo o arquivo antigo do cache.
 
 ## Pendências
 

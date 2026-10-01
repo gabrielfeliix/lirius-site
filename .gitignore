@@ -8,3 +8,6 @@ node_modules/
 /*.jpg
 /*.png
 /*.webp
+
+# Material bruto recebido do cliente (conversa e fotos do WhatsApp)
+_importar/

@@ -283,6 +283,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Página de produto: acrescenta o link da própria página à mensagem do WhatsApp.
+    // Feito aqui, e não no HTML, para valer em qualquer domínio em que o site estiver.
+    const buyBtn = document.getElementById('buy-now-btn');
+    if (buyBtn && window.location.protocol.startsWith('http')) {
+        const pageUrl = window.location.origin + window.location.pathname;
+        buyBtn.href += encodeURIComponent(`\n\n${pageUrl}`);
+    }
+
     // --- Optimized Image Loading (Anti-Jank / Shimmer parent toggle) ---
     const handleImageLoad = (img) => {
         img.classList.add('loaded');
