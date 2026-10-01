@@ -918,6 +918,8 @@ img {
     /* Negative margin to expand viewport and absorb padding */
     flex: 1;
     min-width: 0;
+    /* O navegador cuida da rolagem vertical; o arrasto horizontal fica com o carrossel */
+    touch-action: pan-y pinch-zoom;
 }
 
 .products-slider-track {

@@ -179,7 +179,73 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Touch & Mouse Drag Swipe functionality disabled (navigation only via buttons/dots)
+        // Arrastar com o dedo para trocar de página (apenas toque; no mouse seguem setas e pontos).
+        // O eixo do gesto é travado logo no início: se o dedo anda mais na vertical, a página
+        // rola normalmente e o carrossel não se mexe.
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        let touchDeltaX = 0;
+        let touchAxis = null; // null = indefinido, 'x' = arrastando o carrossel, 'y' = rolando a página
+        let suppressClick = false;
+
+        prodWrapper.addEventListener('touchstart', (e) => {
+            if (e.touches.length !== 1) {
+                touchAxis = 'y';
+                return;
+            }
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
+            touchDeltaX = 0;
+            touchAxis = null;
+        }, { passive: true });
+
+        prodWrapper.addEventListener('touchmove', (e) => {
+            if (touchAxis === 'y') return;
+            const dx = e.touches[0].clientX - touchStartX;
+            const dy = e.touches[0].clientY - touchStartY;
+
+            if (touchAxis === null) {
+                if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+                touchAxis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+                if (touchAxis === 'y') return;
+                prodTrack.style.transition = 'none';
+            }
+
+            // Na primeira e na última página o arrasto "pesa", indicando que não há mais para onde ir
+            const atEdge = (currentPage === 0 && dx > 0) || (currentPage === totalPages - 1 && dx < 0);
+            touchDeltaX = atEdge ? dx * 0.3 : dx;
+            prodTrack.style.transform = `translate3d(calc(${-currentPage * 100}% + ${touchDeltaX}px), 0, 0)`;
+        }, { passive: true });
+
+        const endTouch = () => {
+            if (touchAxis !== 'x') {
+                touchAxis = null;
+                return;
+            }
+            touchAxis = null;
+
+            const quickFlick = Date.now() - touchStartTime < 300 && Math.abs(touchDeltaX) > 30;
+            const draggedFar = Math.abs(touchDeltaX) > prodWrapper.offsetWidth * 0.2;
+            const targetPage = (quickFlick || draggedFar) ? currentPage + (touchDeltaX < 0 ? 1 : -1) : currentPage;
+
+            // Um arrasto que começou em cima de um card não deve abrir o produto
+            suppressClick = true;
+            setTimeout(() => { suppressClick = false; }, 350);
+
+            scrollToPage(targetPage);
+        };
+
+        prodWrapper.addEventListener('touchend', endTouch);
+        prodWrapper.addEventListener('touchcancel', endTouch);
+
+        prodWrapper.addEventListener('click', (e) => {
+            if (suppressClick) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }, true);
 
         // Initialize UI
         generateDots();
