@@ -1,4 +1,16 @@
-const CACHE_NAME = 'floricultura-lirios-v14';
+const CACHE_NAME = 'floricultura-lirios-v15';
+
+// Só entra no cache resposta 200 do próprio site e que não veio de redirecionamento:
+// o navegador recusa entregar uma resposta redirecionada numa navegação.
+const isCacheable = (response) =>
+  response && response.status === 200 && response.type === 'basic' && !response.redirected;
+
+// Resposta real para quando não há rede nem cache. Devolver undefined ao
+// respondWith vira erro de rede no navegador.
+const offlineResponse = () => new Response(
+  '<!DOCTYPE html><html lang="pt-BR"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sem conexão | Lírios Floricultura</title><body style="font-family:sans-serif;text-align:center;padding:4rem 1rem;background:#fbf6f0;color:#3a2a26"><h1>Sem conexão</h1><p>Verifique sua internet e tente novamente.</p></body></html>',
+  { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+);
 
 // Assets to cache immediately on installation.
 // Só entram aqui caminhos que existem em TODAS as versões publicadas.
@@ -56,15 +68,17 @@ self.addEventListener('fetch', (event) => {
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.ok && networkResponse.type === 'basic') {
+        if (isCacheable(networkResponse)) {
           const copy = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
         }
         // Respostas 404/500 são repassadas como vieram, sem serem cacheadas.
         return networkResponse;
       }).catch(() => {
-        // Offline: tenta a própria página e, em último caso, a home.
-        return caches.match(request).then((cached) => cached || caches.match('/'));
+        // Offline: tenta a própria página, depois a home e, em último caso, um aviso.
+        return caches.match(request)
+          .then((cached) => cached || caches.match('/'))
+          .then((cached) => cached || offlineResponse());
       })
     );
     return;
@@ -75,11 +89,11 @@ self.addEventListener('fetch', (event) => {
     caches.open(CACHE_NAME).then((cache) => {
       return cache.match(request).then((cachedResponse) => {
         const networkFetch = fetch(request).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          if (isCacheable(networkResponse)) {
             cache.put(request, networkResponse.clone());
           }
           return networkResponse;
-        }).catch(() => cachedResponse);
+        }).catch(() => cachedResponse || Response.error());
 
         return cachedResponse || networkFetch;
       });

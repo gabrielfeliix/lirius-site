@@ -37,13 +37,21 @@ invisível.
 
 ## Adicionar um produto ao catálogo
 
-1. Converter a foto para `.webp` 600x800 e colocar em `images/`.
+1. Converter a foto para `.webp` 600x800 e colocar em `images/`, e uma cópia
+   `.jpg` em `images/og/` (é a imagem do preview do link no WhatsApp).
 2. Duplicar a pasta de um produto existente, renomear para o novo slug
-   (sempre em ASCII, sem acento) e ajustar título, descrição, imagem e o
-   link do WhatsApp.
+   (sempre em ASCII, sem acento) e ajustar título, descrição, imagem, o
+   link do WhatsApp e as URLs do `canonical`, `og:url`, `og:image` e JSON-LD.
 3. Acrescentar o card em `index.html`, dentro de `.products-slider-track`.
    São 6 cards por `.slider-page`; os pontos e as setas do carrossel são
    gerados pela quantidade de páginas, então não há nada a configurar.
+4. Acrescentar a URL em `sitemap.xml`.
+
+## Domínio e SEO
+
+O domínio principal é `https://www.liriosflores.com` (o apex redireciona para
+o `www`). Todo `canonical`, `og:url`, `og:image`, JSON-LD e o `sitemap.xml`
+usam essa base, com barra no final nas páginas (`trailingSlash` da Vercel).
 
 ## Ao mexer no CSS ou no JS
 
@@ -53,6 +61,8 @@ HTML, senão o navegador continua servindo o arquivo antigo do cache.
 ## Pendências
 
 - Instagram ainda aponta para `@floriculturarecife`
-- Sem domínio definitivo: `canonical` e `og:url` foram removidos e o
-  `og:image` está relativo, o que limita o preview de link no WhatsApp
+- JSON-LD `Florist` da home sem endereço completo, horário e `sameAs`
+- Rodapé sem dados legais (CNPJ, razão social, endereço) e sem páginas de
+  política (privacidade, troca e devolução, entrega)
+- JSON-LD `Product` sem preço: sem `offers.price` o Google não gera rich result
 - Produtos sem link de catálogo do WhatsApp (`wa.me/p/…`)

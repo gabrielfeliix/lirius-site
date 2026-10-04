@@ -258,41 +258,14 @@ document.addEventListener('DOMContentLoaded', () => {
             prodTrack.style.transform = `translate3d(${-currentPage * 100}%, 0, 0)`;
         });
 
-        // Captura o clique em links de produto para armazenar o ID específico
-        document.addEventListener('click', (e) => {
-            const link = e.target.closest('a');
-            if (link && link.getAttribute('href') && link.getAttribute('href').includes('produto.html')) {
-                try {
-                    const url = new URL(link.href, window.location.href);
-                    const productId = url.searchParams.get('id');
-                    if (productId) {
-                        sessionStorage.setItem('clickedProductId', productId);
-                    }
-                } catch (err) {
-                    const match = link.getAttribute('href').match(/id=([^&]+)/);
-                    if (match && match[1]) {
-                        sessionStorage.setItem('clickedProductId', match[1]);
-                    }
-                }
+        // Guarda o produto clicado (o href do card, ex.: "/buque-puro-amor/") para,
+        // ao voltar à home, rolar direto até ele.
+        prodWrapper.addEventListener('click', (e) => {
+            const link = e.target.closest('.product-card a[href]');
+            if (link) {
+                sessionStorage.setItem('clickedProductId', link.getAttribute('href'));
             }
         });
-
-        // Se estivermos na página de detalhes do produto, armazena automaticamente o ID atual
-        // como garantia adicional para qualquer fluxo de retorno ou navegação
-        if (window.location.pathname.includes('produto.html')) {
-            try {
-                const params = new URLSearchParams(window.location.search);
-                const productId = params.get('id');
-                if (productId) {
-                    sessionStorage.setItem('clickedProductId', productId);
-                }
-            } catch (err) {
-                const match = window.location.search.match(/id=([^&]+)/);
-                if (match && match[1]) {
-                    sessionStorage.setItem('clickedProductId', match[1]);
-                }
-            }
-        }
 
         // Rola de forma instantânea até o card do produto ao retornar para evitar qualquer animação de rolagem
         const clickedProductId = sessionStorage.getItem('clickedProductId');
@@ -304,7 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
             htmlEl.style.scrollBehavior = 'auto';
 
             setTimeout(() => {
-                const targetLink = document.querySelector(`#produtos a[href*="id=${clickedProductId}"]`);
+                const targetLink = Array.from(prodWrapper.querySelectorAll('.product-card a[href]'))
+                    .find((a) => a.getAttribute('href') === clickedProductId);
                 if (targetLink) {
                     const card = targetLink.closest('.product-card');
                     if (card) {
