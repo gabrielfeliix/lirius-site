@@ -1,4 +1,4 @@
-const CACHE_NAME = 'floricultura-lirios-v13';
+const CACHE_NAME = 'floricultura-lirios-v14';
 
 // Assets to cache immediately on installation.
 // Só entram aqui caminhos que existem em TODAS as versões publicadas.
